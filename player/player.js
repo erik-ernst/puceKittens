@@ -190,6 +190,9 @@ function completeFn()
 	console.log("Finished input (async). Time:", end-start, arguments);
 	console.log("Rows:", rows, "Stepped:", stepped, "Chunks:", chunks);
 
+	var headers = arguments[0].data[0];
+	console.log(headers);
+
 	/*All code from here below was added by eernst 2017-12/29*/			
 	var pRes = arguments[0].data;
 	var pixels = [];
@@ -208,7 +211,7 @@ function completeFn()
 			$(".pixel-list").append("<b> Response: " + response + "</b>");
 		})*/
 	}
-	download_csv(pixels);
+	// download_csv(pixels);
 
 	
 	

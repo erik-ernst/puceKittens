@@ -45,6 +45,55 @@
 				<label>Papa.RemoteChunkSize: <input type="number" min="0" placeholder="default" id="remoteChunkSize"></label>
 			</div>
 
+			<div id="column-to-key-simple">
+				<table>
+					<tr>
+						<th>OID</th>
+						<th>CID</th>
+						<th>TYPE</th>
+						<th>AMOUNT</th>
+					</tr>
+				</table>
+				<form id="tag-values-simple">
+					<select id="oid1">
+						<option value="volvo">Volvo</option>
+						<option value="saab">Saab</option>
+						<option value="mercedes">Mercedes</option>
+						<option value="audi">Audi</option>
+					</select>
+					<select id="cid1">
+						<option value="volvo">Volvo</option>
+						<option value="saab">Saab</option>
+						<option value="mercedes">Mercedes</option>
+						<option value="audi">Audi</option>
+					</select>
+					<select id="type1">
+						<option value="volvo">Volvo</option>
+						<option value="saab">Saab</option>
+						<option value="mercedes">Mercedes</option>
+						<option value="audi">Audi</option>
+					</select>
+					<select id="amount1">
+						<option value="volvo">Volvo</option>
+						<option value="saab">Saab</option>
+						<option value="mercedes">Mercedes</option>
+						<option value="audi">Audi</option>
+					</select>
+					<br>
+					<input type="text" id="oid2">
+					<input type="text" id="cid2">
+					<input type="text" id="type2">
+					<input type="text" id="amount2">
+				<button type="submit" value="Submit" onclick=formValues(oid1.value,oid2.value)>Submit</button>
+				</form>
+			</div>
+			<script>
+				function formValues(x,y){
+					tagVals = [x,y];
+					alert(tagVals);
+				};
+			</script>
+
 			<div class="grid-75 text-center">
 
 				<textarea id="input" placeholder="Input">Column 1,Column 2,Column 3,Column 4
