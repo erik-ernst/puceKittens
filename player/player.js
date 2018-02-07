@@ -84,6 +84,27 @@ $(function()
 	{
 		$('#delimiter').val('\t');
 	});
+
+	$('#files').change(function()
+	{
+		var file = event.target.files[0];
+        var reader = new FileReader();
+        reader.onload = function(event) {
+			var text = reader.result;
+			var firstLine = text.split('\n').shift();
+			var lines = text.split('\n');
+			lines.splice(0,1);
+			var newtext = lines.join('\n');
+			var secLine = newtext.split('\n').shift();
+			var lines2 = newtext.split('\n');
+			lines2.splice(0,1);
+			var newnewtext = lines2.join('\n');
+			var thirdLine = newnewtext.split('\n').shift();
+			document.getElementById('filePrev').value = (firstLine + "\n" + secLine + "\n" + thirdLine);
+        };
+		reader.readAsText(file);
+	});
+
 });
 
 function buildConfig()
