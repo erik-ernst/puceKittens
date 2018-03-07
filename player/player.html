@@ -24,6 +24,9 @@
 				<label><input type="checkbox" id="skipEmptyLines"> Skip empty lines</label>
 				<label><input type="checkbox" id="step-pause"> Pause on step</label>
 				<label><input type="checkbox" id="print-steps"> Log each step/chunk</label>
+				<p></p>
+				<label><input type="checkbox" id="output-csv">Output resulting pixels to CSV file</label>
+				<p></p>
 				
 				<label>Delimiter: <input type="text" size="5" placeholder="auto" id="delimiter"> <a href="javascript:" id="insert-tab">tab</a></label>
 
@@ -113,7 +116,13 @@ line break"</textarea>
 				<input type="file" id="files" multiple>
 			
 				<br><br>
-
+<!-- 			<label><input type="checkbox" id="preview-pixels">Check this to preview the output in the browser</label>
+				<label><input type="checkbox" id="fire-ze-pixels" >Check this to have the pixels fired upon completion of parsing</label>
+				<script>$('#preview-pixels').change = function() { $('#fire-ze-pixels').enabled = !this.checked; };</script> -->
+				<p>Choose whether to preview or fire the pixels</p>
+				<label><input type="radio" id="preview-pixels" name="firePixels" value="preview" checked>Select to preview the output in the browser</label>
+				<label><input type="radio" id="fire-ze-pixels" name="firePixels" value="fire">Select to have the pixels fired upon completion of parsing</label>
+				<br><br>
 				<button id="submit-parse">Parse</button>
 				&nbsp;
 				<button id="submit-unparse">Unparse</button>
@@ -124,7 +133,7 @@ line break"</textarea>
 
 				<br><br>
 			</div>
-
+			<div class="pixel-preview"></div>
 			<div class="pixel-list"></div>
 		</div>
 	</body>
