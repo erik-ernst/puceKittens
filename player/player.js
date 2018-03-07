@@ -206,6 +206,7 @@ function constructPixels(data)
 	var outputCsv = $('#output-csv').prop('checked');
 	var pRes = data;
 	var pixels = [];
+	//using hard-coded test account for testing
 	var uriPrefix = "https://www.emjcd.com/u?CID=1507107&TYPE=382584";
 	console.log("line 190 " + pRes.length);
 	for (i = 1; i < pRes.length; i++)
@@ -218,17 +219,18 @@ function constructPixels(data)
 	
 	if (previewPixels)
 	{
-		$(".pixel-preview").append("<p><b>Here is a sampling of query strings from 10 random pixels</b></p>");
+		$(".pixel-preview").append("<p><b>Total Pixels: " + pixels.length + "</p></p>")
+		$(".pixel-preview").append("<p><b>Sampling of query strings from up to 10 random pixels</b></p>");
 		for (i=0; i<(pixels.length < 10 ? pixels.length : 10); i++)
 		{
 			p = pixels[Math.floor(Math.random() * pixels.length)];
-			$(".pixel-preview").append("<p><b>" + p.substring(p.indexOf("?")) + "</p></b>");
+			$(".pixel-preview").append("<p><b>" + p.substring(p.indexOf("?") + 1) + "</p></b>");
 		}
 	}
 	
 	if (fireZePixels)
 	{
-		for (i=1; i < pixels.length; i++)
+		for (i=1; i<pixels.length; i++)
 		{
 			$(".pixel-list").append("<img src=\"" + pixels[i] + "\" height=\"1\" width=\"1\" ><br>");
 		}
