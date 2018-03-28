@@ -199,6 +199,51 @@ function errorFn(error, file)
 	console.log("ERROR:", error, file);
 }
 
+function constructPixels(data)
+{
+	var previewPixels = $('#preview-pixels').prop('checked');
+	var fireZePixels = $('#fire-ze-pixels').prop('checked');
+	var outputCsv = $('#output-csv').prop('checked');
+	var pRes = data;
+	var pixels = [];
+	//using hard-coded test account for testing
+	var uriPrefix = "https://www.emjcd.com/u?CID=1507107&TYPE=382584";
+	console.log("line 190 " + pRes.length);
+	for (i = 1; i < pRes.length; i++)
+	{
+		uri = "";
+		uri += uriPrefix;
+		uri += "&AMOUNT=" + pRes[i][4] + "&OID=" + pRes[i][1] + "&METHOD=S2S";
+		pixels.push(uri);
+	}
+	
+	if (previewPixels)
+	{
+		$(".pixel-preview").append("<p><b>Total Pixels: " + pixels.length + "</p></p>")
+		$(".pixel-preview").append("<p><b>Sampling of query strings from up to 10 random pixels</b></p>");
+		for (i=0; i<(pixels.length < 10 ? pixels.length : 10); i++)
+		{
+			p = pixels[Math.floor(Math.random() * pixels.length)];
+			$(".pixel-preview").append("<p><b>" + p.substring(p.indexOf("?") + 1) + "</p></b>");
+		}
+	}
+	
+	if (fireZePixels)
+	{
+		for (i=1; i<pixels.length; i++)
+		{
+			$(".pixel-list").append("<img src=\"" + pixels[i] + "\" height=\"1\" width=\"1\" ><br>");
+		}
+		
+		$(".pixel-list").append("<p><b>ZE PIXELS HAVE BEEN FIRED!</b></p>");
+	}
+
+	if (outputCsv)
+	{
+		download_csv(pixels);
+	}
+}
+
 function completeFn()
 {
 	end = performance.now();
@@ -214,24 +259,10 @@ function completeFn()
 	var headers = arguments[0].data[0];
 	console.log(headers);
 
-	/*All code from here below was added by eernst 2017-12/29*/			
-	var pRes = arguments[0].data;
-	var pixels = [];
-	var uriPrefix = "https://www.emjcd.com/u?CID=1501378&TYPE=382584";
-	console.log("line 190 " + pRes.length);
-	for (i = 1; i < pRes.length; i++)
-	{
-		uri = "";
-		uri += uriPrefix;
-		uri += "&AMOUNT=" + pRes[i][4] + "&OID=" + pRes[i][1] + "&METHOD=S2S";
-		$(".pixel-list").append("<p><b>" + uri + "</b></p> <img src=\"" + uri + "\" height=\"1\" width=\"1\" ><br>") ;
-		pixels.push(uri);
+	constructPixels(arguments[0].data);
 
-        /*httpGet(uri, function(response)
-		{
-			$(".pixel-list").append("<b> Response: " + response + "</b>");
-		})*/
-	}
+}
+		
 	// download_csv(pixels);
 
 	
@@ -248,7 +279,7 @@ function completeFn()
 	
 
 	/*Code for producing text file, currently not working*/
-	var textFile = null,
+	/* var textFile = null,
   	makeTextFile = function (text) {
     var data = new Blob([text], {type: 'text/plain'});
 
@@ -276,7 +307,7 @@ function completeFn()
 	}
 	console.log(pixels.toString);
 	downloadFile(makeTextFile(pixels.toString));
-}
+} */
 
 function download_csv(arr) {
 	var i=0;
@@ -286,13 +317,13 @@ function download_csv(arr) {
 			csv += "\n";
 			i++;
 	}
-	console.log(csv);
+	//console.log(csv);
 	var hiddenElement = document.createElement('a');
 	hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv); 
 	hiddenElement.target = '_blank';
 	hiddenElement.download = 'hotels.csv';
 	hiddenElement.click();
-};
+}
 
 // function showData(arr) {
 // 	console.log(arr.length);
