@@ -18,7 +18,7 @@ $(function() {
 // debugger
 var formvalu = function(){
 		
-		var ob = [cat_1,cat_2,cat_3,cat_4];
+		var ob = columns //[cat_1,cat_2,cat_3];
 		getFormText(ob);
 	
 	function getFormText(e){
@@ -147,7 +147,7 @@ var formvalu = function(){
             }
 
             function addOption_list(selectbox) {
-                console.log("test");
+               
                 var month = columns;
                 var box = selectbox;
 
@@ -158,7 +158,7 @@ var formvalu = function(){
             }
              
            
-            var dropDown = [tag_form.cat_1,tag_form.cat_2, tag_form.cat_3, tag_form.cat_4];
+            var dropDown = [tag_form.cat_1,tag_form.cat_2, tag_form.cat_3];
             for (var i = 0; i <= dropDown.length -1; i++) {
             	
             	addOption_list(dropDown[i]);
@@ -299,23 +299,23 @@ function constructPixels(data) { //pass in second selection param later
 //     	arr.concat(columns[i]);
 //     	console.log(columns)
 // }
-    console.log(columns[0]);
+    console.log(columns[0].OID, columns[1].OID);
     console.log(columns[1]);
     console.log(columns[2]);
-    console.log(columns[3]);
-    console.log(columns[1][0], columns[1][1], columns[1][2]), columns[1][3];
+    console.log(columns[3]["OID"]);
+    console.log(selection);
 
 // Columns Name array (make readable here - global) X
 // Take selection[i] (name of column) and find it's index in columns name array columns[0]
 // pull that index and align w data in tag
    
    
-// debugger
+ debugger
 // if (cat_1.text == "Column Edit" || cat_2.text == "Column Edit"){
-    for (i = 1; i < pRes.length; i++) {
+    for (i = 0; i < pRes.length; i++) {
         uri = "";
         uri += uriPrefix;
-        uri += "&OID=" + selection[i][columns[1]] + "&CID="+ selection[1] + "&TYPE=" + selection[2] + "&AMOUNT=" + pRes[i][4] + "&OID=" + pRes[i][1] + "&METHOD=S2S";
+       uri += "&OID=" + [columns[i].OID] + "&CID="+ selection[1] + "&TYPE=" + selection[2] + "&AMOUNT=" + pRes[i][4] + "&OID=" + pRes[i][1] + "&METHOD=S2S";
         pixels.push(uri);
     }
 
@@ -325,10 +325,12 @@ function constructPixels(data) { //pass in second selection param later
         $(".pixel-preview").append("<p><b>Total Pixels: " + pixels.length + "</p></p>")
         $(".pixel-preview").append("<p><b>Sampling of query strings from up to 10 random pixels</b></p>");
         for (i = 0; i < (pixels.length < 10 ? pixels.length : 10); i++) {
-            p = pixels[Math.floor(Math.random() * pixels.length)]; //wtf does this do?
+        	r = Math.floor(Math.random() * pixels.length);
+        	console.log(r);
+            p = pixels[r]; //wtf does this do?
             $(".pixel-preview").append("<p><b>" + p.substring(p.indexOf("?") + 1) + "</p></b>");
         }
-        console.log(p);
+        
     }
 
     if (fireZePixels) {
