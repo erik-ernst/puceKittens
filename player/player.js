@@ -11,7 +11,6 @@ var columns = [];
 
 
 
-
 $(function() {
     $('#submit-parse').click(function() {
  
@@ -290,7 +289,19 @@ function constructPixels(data) { //pass in second selection param later
     var pixels = [];
      
     columns = pRes;
-    var uriPrefix = "https://www.emjcd.com/u?CID=1507107&TYPE=382584";
+    var uriPrefix = "https://www.emjcd.com/u?cid=1501378&type=400523";
+
+    function hexEncode() {
+        var hex, i;
+    
+        var result = "";
+        for (i=0; i<this.length; i++) {
+            hex = this.charCodeAt(i).toString(16);
+            result += ("000"+hex).slice(-4);
+        }
+    
+        return result
+    }
     console.log("line 190 " + pRes.length);
     console.log(columns);
 //     debugger
@@ -315,7 +326,13 @@ function constructPixels(data) { //pass in second selection param later
     for (i = 0; i < pRes.length; i++) {
         uri = "";
         uri += uriPrefix;
-       uri += "&OID=" + [columns[i].OID] + "&CID="+ selection[1] + "&TYPE=" + selection[2] + "&AMOUNT=" + pRes[i][4] + "&OID=" + pRes[i][1] + "&METHOD=S2S";
+        sig = "1268a0c6c6fb6f7e97c92bb015a8a0c5";
+       // hsig = hexEncode(hash(encodeURIComponent(sig+ pRes[i]['OID'])));
+       // console.log("Hashed signature= " + hsig);
+       uri += "&oid=" + pRes[i]['OID'] + "&amount=" + pRes[i]['Sale Amount'] + "&check_in_date=" +  pRes[i]['CHECKIN'] 
+       + "&check_out_date=" +  pRes[i]['CHECKOUT'] + "&country=" +  pRes[i]['POSA'] + "&wr_earned=" +  pRes[i]['WR_EARNED'] + "&CURRENCY=" 
+       +  pRes[i]['CURRENCY_POSA'] + "&coupon=" +  pRes[i]['COUPON'] + "&property_id=" +  pRes[i]['SUPPLIER_PROPERTY_ID'] + "&payment_model=" 
+       +  pRes[i]['PAYMENT_MODEL'] + "&cjevent=" +  pRes[i]['EVENT_ID'] + "&signature=" + sig + "&METHOD=S2S";
         pixels.push(uri);
     }
 
@@ -335,7 +352,8 @@ function constructPixels(data) { //pass in second selection param later
 
     if (fireZePixels) {
         for (i = 1; i < pixels.length; i++) {
-            $(".pixel-list").append("<img src=\"" + pixels[i] + "\" height=\"1\" width=\"1\" ><br>");
+           // $(".pixel-list").append("<img src=\"" + pixels[i] + "\" height=\"1\" width=\"1\" ><br>");
+           httpget(pixels[i]);
         }
 
         $(".pixel-list").append("<p><b>ZE PIXELS HAVE BEEN FIRED!</b></p>");
