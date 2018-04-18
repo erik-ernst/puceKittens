@@ -200,7 +200,7 @@ function buildConfig() {
     return {
         delimiter: $('#delimiter').val(),
         newline: getLineEnding(),
-        header: $('#header').prop('checked'),
+        header: true, // disregard the input; we always want headers, at least for this custom branch
         dynamicTyping: $('#dynamicTyping').prop('checked'),
         preview: parseInt($('#preview').val() || 0),
         step: $('#stream').prop('checked') ? stepFn : undefined,
@@ -228,17 +228,24 @@ function buildConfig() {
     }
 }
 
-/*Currently not using this function. Had added this to hopefully 
-make s2s calls from this script, but the remote server won't accept 
-calls from localhost*/
+/*Currently not using this function as cross-domain requests 
+ * are not accepted via browser. Leaving in case this is ported
+ * to a server-side API 
+ */
 function httpGet(s2sUri, callback) {
     var xmlHttp = new XMLHttpRequest();
+    var queryString = s2sUri.substring(s2sUri.indexOf("?") + 1);
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-            callback(xmlHttp.responseText);
+        {
+            callback(xmlHttp.responseText, queryString);
+        }
+ /*        else
+        {
+            callback("S2S Call Failed" + (xmlHttp.responseText ? " - " + xmlHttp.responseText : ""), queryString);
+        } */
     }
     xmlHttp.open("GET", s2sUri, true);
-    xmlHttp.setRequestHeader("Origin", "https://emjcd.com");
     xmlHttp.send(null);
 }
 
@@ -280,59 +287,32 @@ function errorFn(error, file) {
     console.log("ERROR:", error, file);
 }
 
-function constructPixels(data) { //pass in second selection param later
-	console.log(selection);
+function constructPixels(data) { 
+	// console.log(selection);
     var previewPixels = $('#preview-pixels').prop('checked');
     var fireZePixels = $('#fire-ze-pixels').prop('checked');
-    var outputCsv = $('#output-csv').prop('checked');
-    var pRes = data; //pRes is the data that is returned from the text area
+    var pRes = data; 
     var pixels = [];
      
     columns = pRes;
-    var uriPrefix = "https://www.emjcd.com/u?cid=1501378&type=400523";
+    var uriPrefix = "https://www.emjcd.com/u?cid=1501378&type=400523"; //custom for Hotels.com
 
-    function hexEncode() {
-        var hex, i;
-    
-        var result = "";
-        for (i=0; i<this.length; i++) {
-            hex = this.charCodeAt(i).toString(16);
-            result += ("000"+hex).slice(-4);
-        }
-    
-        return result
-    }
-    console.log("line 190 " + pRes.length);
+    // console.log("line 190 " + pRes.length);
     console.log(columns);
-//     debugger
-//     for (var i = 0; i < columns.length; i++) {
-//     	var arr = []
-//     	arr.concat(columns[i]);
-//     	console.log(columns)
-// }
-    console.log(columns[0].OID, columns[1].OID);
-    console.log(columns[1]);
-    console.log(columns[2]);
-    console.log(columns[3]["OID"]);
-    console.log(selection);
-
-// Columns Name array (make readable here - global) X
-// Take selection[i] (name of column) and find it's index in columns name array columns[0]
-// pull that index and align w data in tag
-   
-   
- debugger
-// if (cat_1.text == "Column Edit" || cat_2.text == "Column Edit"){
+    
+    /* This uri is customized for a specific file provided by
+     * Hotels.com and will not work for any other file. What 
+     * should be the same regardless of advertiser is the presence
+     * of the cjevent parameter and METHOD=S2S
+     */
     for (i = 0; i < pRes.length; i++) {
         uri = "";
         uri += uriPrefix;
-        sig = "1268a0c6c6fb6f7e97c92bb015a8a0c5";
-       // hsig = hexEncode(hash(encodeURIComponent(sig+ pRes[i]['OID'])));
-       // console.log("Hashed signature= " + hsig);
-       uri += "&oid=" + pRes[i]['OID'] + "&amount=" + pRes[i]['Sale Amount'] + "&check_in_date=" +  pRes[i]['CHECKIN'] 
-       + "&check_out_date=" +  pRes[i]['CHECKOUT'] + "&country=" +  pRes[i]['POSA'] + "&wr_earned=" +  pRes[i]['WR_EARNED'] + "&CURRENCY=" 
-       +  pRes[i]['CURRENCY_POSA'] + "&coupon=" +  pRes[i]['COUPON'] + "&property_id=" +  pRes[i]['SUPPLIER_PROPERTY_ID'] + "&payment_model=" 
-       +  pRes[i]['PAYMENT_MODEL'] + "&cjevent=" +  pRes[i]['EVENT_ID'] + "&signature=" + sig + "&METHOD=S2S";
+        uri += "&oid=" + pRes[i]['OID'] + "&amount=" + pRes[i]['Sale Amount'] + "&check_in_date=" +  pRes[i]['CHECKIN'] 
+        + "&check_out_date=" +  pRes[i]['CHECKOUT'] + "&country=" +  pRes[i]['POSA'] + "&wr_earned=" +  pRes[i]['WR_EARNED'] + "&CURRENCY=" 
+        +  pRes[i]['CURRENCY_POSA'] + (pRes[i]['COUPON'] == "" || pRes[i]['COUPON'] == "UNDEFINED" ? "" : "&coupon=" +  pRes[i]['COUPON']) 
+        + "&property_id=" +  pRes[i]['SUPPLIER_PROPERTY_ID'] + "&payment_model=" +  pRes[i]['PAYMENT_MODEL'] + "&cjevent=" +  pRes[i]['EVENT ID'] 
+        + "&METHOD=S2S";
         pixels.push(uri);
     }
 
@@ -341,27 +321,56 @@ function constructPixels(data) { //pass in second selection param later
     if (previewPixels) {
         $(".pixel-preview").append("<p><b>Total Pixels: " + pixels.length + "</p></p>")
         $(".pixel-preview").append("<p><b>Sampling of query strings from up to 10 random pixels</b></p>");
-        for (i = 0; i < (pixels.length < 10 ? pixels.length : 10); i++) {
-        	r = Math.floor(Math.random() * pixels.length);
-        	console.log(r);
-            p = pixels[r]; //wtf does this do?
-            $(".pixel-preview").append("<p><b>" + p.substring(p.indexOf("?") + 1) + "</p></b>");
+        if (pixels.length < 10) {
+            for (i = 0; i < pixels.length; i++) {
+                $(".pixel-preview").append("<p>" + pixels[i].substring(pixels[i].indexOf("?") + 1) + "</p>");
+            }
         }
-        
+        else {
+            var usedIndices = [];
+            var r = 0;
+            for (i = 0; i < 10; i++) {
+                if (usedIndices.length == 0 && r == 0) {
+                    r = Math.floor(Math.random() * pixels.length);
+                    $(".pixel-preview").append("<p>" + pixels[r].substring(pixels[r].indexOf("?") + 1) + "</p>");
+                    usedIndices.push[r];
+                }
+                else {
+                    r = Math.floor(Math.random() * pixels.length);
+                    if (usedIndices[r]) {
+                        i--
+                    }
+                    else {
+                        $(".pixel-preview").append("<p>" + pixels[r].substring(pixels[r].indexOf("?") + 1) + "</p>");
+                        usedIndices.push[r];
+                    }
+                }
+
+            }
+
+        }
+    }
+
+/*  This function would be called by the httpGet function to handle the callback. 
+ *  However, cross-domain requests are not allowed by the remote server via a browser,
+ *  so this code is not presently being used. However, if this is ever ported to a server-side
+ *  api, this function could ostensibly be used. 
+ */
+    function pixelCallback(responseText, queryString) {
+        console.log("S2S Response: " + responseText + " | query string: " + queryString);
+        $(".pixel-list").append("<p><b> QUERY STRING: " + queryString + " RESPONSE: " + responseText + "</p></b>")
     }
 
     if (fireZePixels) {
-        for (i = 1; i < pixels.length; i++) {
-           // $(".pixel-list").append("<img src=\"" + pixels[i] + "\" height=\"1\" width=\"1\" ><br>");
-           httpget(pixels[i]);
+        $(".pixel-list").append("<p><b>Query Strings from the fired pixel(s)</p>");
+        for (i = 0; i < pixels.length; i++) {
+            $(".pixel-list").append("<img src=\"" + pixels[i] + "\" height=\"1\" width=\"1\" ><br>");
+            $(".pixel-list").append("<p>" + pixels[i].substring(pixels[i].indexOf("?")+1) + "</p>");
+
+           //httpGet(pixels[i], pixelCallback); // see block comment above
         }
-
-        $(".pixel-list").append("<p><b>ZE PIXELS HAVE BEEN FIRED!</b></p>");
     }
-
-    if (outputCsv) {
-        download_csv(pixels);
-    }
+        downloadCsv(pixels);
 }
 
 function completeFn() {
@@ -402,65 +411,16 @@ function completeFn() {
     	
     	console.log("hello")
     }
-    
-
-
-
 
     constructPixels(arguments[0].data); //pass in selection later
 
 }
 
 
-
-
-// download_csv(pixels);
-
-
-
-
-
-
-
-
-
-// <button onclick="download_csv()">Download CSV</button> 
-
-
-
-
-/*Code for producing text file, currently not working*/
-/* var textFile = null,
-  	makeTextFile = function (text) {
-    var data = new Blob([text], {type: 'text/plain'});
-
-    // If we are replacing a previously generated file we need to
-    // manually revoke the object URL to avoid memory leaks.
-    if (textFile !== null) {
-      window.URL.revokeObjectURL(textFile);
-    }
-
-    textFile = window.URL.createObjectURL(data);
-
-    // returns a URL you can use as a href
-    return textFile;
-	};
-	var downloadFile = function downloadURL(url) {
-    	var hiddenIFrameID = 'hiddenDownloader',
-    	iframe = document.getElementById(hiddenIFrameID);
-    	if (iframe === null) {
-        	iframe = document.createElement('iframe');
-       	 	iframe.id = hiddenIFrameID;
-        	iframe.style.display = 'none';
-        	document.body.appendChild(iframe);
-    	}
-    	iframe.src = url;
-	}
-	console.log(pixels.toString);
-	downloadFile(makeTextFile(pixels.toString));
-} */
-
-function download_csv(arr) {
+/* Not working - csv is being created but nothing downloads - no errors either
+ */
+function downloadCsv(arr) {
+    console.log("Hey we're supposed to be downloading a csv here... ");
     var i = 0;
     var csv = 'Hotels.com Tags\n';
     while (i < arr.length) {
@@ -468,14 +428,19 @@ function download_csv(arr) {
         csv += "\n";
         i++;
     }
-    //console.log(csv);
-    var hiddenElement = document.createElement('a');
-    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-    hiddenElement.target = '_blank';
-    hiddenElement.download = 'hotels.csv';
-    hiddenElement.click();
-}
+    var hiddenElement = document.createElement('csvDownload');
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+        hiddenElement.target = '_blank';
+        hiddenElement.download = 'pixel_list_' + new Date().toDateString + '.csv';
+        hiddenElement.click();
 
-// function showData(arr) {
-// 	console.log(arr.length);
-// };
+        // var hiddenElement = document.createElement('csvDownload');
+        // hiddenElement.setAttribute('href','data:text/csv;charset=utf-8,' + encodeURI(csv));
+        // hiddenElement.setAttribute('download', 'pixel_list_' + new Date().toDateString + '.csv');
+        // // console.log("CSV? " + csv)
+        // // hiddenElement.download = 'pixel_list_' + new Date().toDateString + '.csv';
+        // hiddenElement.style.display - 'none';
+        // document.body.appendChild(hiddenElement);
+        // hiddenElement.click();
+        // document.body.removeChild(hiddenElement);
+}
