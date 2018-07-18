@@ -18,8 +18,8 @@
 				<label><input type="checkbox" id="stream"> Stream</label>
 				<label><input type="checkbox" id="chunk"> Chunk</label>
 				<!-- <label><input type="checkbox" id="worker"> Worker thread</label> -->
-				<label><input type="checkbox" id="header" style="visibility: hidden;" checked></label> <!--
-				<label><input type="checkbox" id="dynamicTyping"> Dynamic typing</label>
+				<label><input type="checkbox" id="header" style="visibility: hidden;" checked></label> 
+				<!-- <label><input type="checkbox" id="dynamicTyping"> Dynamic typing</label>
 				<label><input type="checkbox" id="fastmode"> Fast mode</label>
 				<label><input type="checkbox" id="skipEmptyLines"> Skip empty lines</label>
 				<label><input type="checkbox" id="step-pause"> Pause on step</label>
@@ -46,12 +46,94 @@
 				<label>Papa.RemoteChunkSize: <input type="number" min="0" placeholder="default" id="remoteChunkSize"></label>
 			</div>
 
-			<div id="column-to-key-simple">
+			<input type="file" id="files" multiple>
+
+			<div id="column-to-key-simple" class="center">
 				<table>
 					<textarea id="filePrev" rows="3" style="min-height: inherit; height: auto;" placeholder="Load a file to see preview"></textarea>
+				</table>		
+				<table id="paramToColumnTable" width="350px" border="1">
+					<tr>
+						<th></th>
+						<th>Pixel parameter name</th>
+						<th>Custom parameter name (if not in list)</th>
+						<th>Column header (from file)</th>
+						<th>Static value</th>
+					</tr>
+					<tr>
+						<td><INPUT type="checkbox" name="chk"/></td>
+						<td>CID</td>
+						<td></td>
+						<td>
+							<select name="file_header" id="fileColumnHeader" class="columnSelect" style="width: 172px">
+								<Option value="" >Choose a column</option>
+							</select>
+						</td>
+						<td><INPUT type="text" name="staticVal" /></td>
+					</tr>
+					<tr>
+					<tr>
+						<td><INPUT type="checkbox" name="chk1"/></td>
+						<td>TYPE</td>
+						<td></td>
+						<td>
+							<select name="file_header1" id="fileColumnHeader1" class="columnSelect" style="width: 172px">
+								<Option value="" >Choose a column</option>
+							</select>
+						</td>
+						<td><INPUT type="text" name="staticVal1" /></td>
+					</tr><tr>
+						<td><INPUT type="checkbox" name="chk2"/></td>
+						<td>OID</td>
+						<td></td>
+						<td>
+							<select name="file_header2" id="fileColumnHeader2" class="columnSelect" style="width: 172px">
+								<Option value="" >Choose a column</option>
+							</select>
+						</td>
+						<td></td>
+					</tr><tr>
+						<td><INPUT type="checkbox" name="chk3"/></td>
+						<td>AMOUNT</td>
+						<td></td>
+						<td>
+							<select name="file_header3" id="fileColumnHeader3" class="columnSelect" style="width: 172px">
+								<Option value="" >Choose a column</option>
+							</select>
+						</td>
+						<td><INPUT type="text" name="staticVal3" /></td>
+					</tr><tr>
+						<td><INPUT type="checkbox" name="chk4"/></td>
+						<td>CURRENCY</td>
+						<td></td>
+						<td>
+							<select name="file_header4" id="fileColumnHeader4" class="columnSelect" style="width: 172px">
+								<Option value="" >Choose a column</option>
+							</select>
+						</td>
+						<td><INPUT type="text" name="staticVal4" /></td>
+					</tr>
+					<tr>
+						<td><INPUT type="checkbox" name="chk5"/></td>
+						<td>
+							<select name="param" id="pixParam5" class="paramSelect" style="width: 172px">
+								<Option value="" >Choose a predefined parameter</option>
+							</select>
+						</td>
+						<td> <INPUT type="text" name="staticParamName" /> </td>
+						<td>
+							<select name="file_header5" id="fileColumnHeader5" class="columnSelect" style="width: 172px">
+								<Option value="" >Choose a column</option>
+							</select>
+						</td>
+						<td> <INPUT type="text" name="staticVal5" /> </td>
+					</tr>
 				</table>
-				
-				<form name="tag_form" id="tag-values-simple">
+
+				<INPUT type="button" value="Add Row" onclick="addRow('paramToColumnTable')" />
+				<INPUT type="button" value="Delete Selected Row(s)" onclick="deleteRow('paramToColumnTable')" />
+
+				<!-- <form name="tag_form" id="tag-values-simple">
 
 					<label for="cat_1" style="display: inline;">OID</label>
 					<select name="cat_1" id="cat_1" placeholder= "OID" style="width: 172px">
@@ -82,20 +164,26 @@
 
 					
 				<button onclick="formValues()" type="submit" value="Submit" id="pre_sub">Submit</button>
-				<!-- <button onClick="addOption";></button> -->
-				</form>
+				<button onClick="addOption";></button>
+				</form> -->
 			</div>
+
+							
+			<div class="text-center">
+				<button id="submit-columns" onclick="buildParamToColumnArray()">Submit column assignments</button>
+			</div>
+				
 			
 
 			<div class="grid-75 text-center">
 
 		
 		
-				<br>
+				<!-- <br>
 				<b>or</b>
-				<br>
+				<br> -->
 
-				<input type="file" id="files" multiple>
+				<!-- <input type="file" id="files" multiple> -->
 			
 				<br><br>
 <!-- 			<label><input type="checkbox" id="preview-pixels">Check this to preview the output in the browser</label>

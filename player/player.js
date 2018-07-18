@@ -8,7 +8,17 @@ var printStepChecked = false;
 var uri;
 var selection = [];
 var columns = [];
+var paramColumnArr = [];
 
+var travelParams = ['travel_type','cust_status','domestic','platform_id','cust_country','cust_type','loyalty_status',
+                    'loyalty_level','loyalty_earned','loyalty_redeemed','itinerary_id','promotion','coupon_discount',
+                    'coupon_type','prepaid','no_cancellation','payment_method','payment_model','margin','ancillary_spend',
+                    'marketing_channel','paid_at_booking_pre_tax','paid_at_booking_post_tax','booking_value_pre_tax',
+                    'booking_value_post_tax','guests','age','confirmation_number','or_city','or_state','or_country','dest_city',
+                    'dest_state','dest_country','booking_date','booking_status','start_date_time','end_date_time','duration',
+                    'brand_id','brand','rooms','room_type','class','city','item_name','cruise_type','ship_name','rating',
+                    'min_stay_duration','port','trip_type','iata','flight_type','flight_fare_type','flyer_miles','flight_options',
+                    'pickup_id','pickup_iata','dropoff_id','dropoff_iata','car_options'];
 
 
 $(function() {
@@ -136,32 +146,43 @@ var formvalu = function(){
             var thirdLine = newnewtext.split('\n').shift();
             document.getElementById('filePrev').value = (firstLine + "\n" + secLine + "\n" + thirdLine);
 
-
-            function addOption(selectbox, text, value) {
+            function addOption(selectbox, text) {
                 
                 var optn = document.createElement("OPTION");
                 optn.text = text;
-                optn.value = value;
+                optn.value = text;
                 selectbox.options.add(optn);
             }
 
-            function addOption_list(selectbox) {
-               
-                var month = columns;
+            function addOption_list(selectbox, arr) {
+
+                var headers = arr;
                 var box = selectbox;
 
-                for (var i = 0; i < month.length; ++i) {
-                    addOption(box, month[i], month[i]);
+                for (var i = 0; i < headers.length; ++i) {
+                    addOption(box, headers[i]);
                 }
 
             }
-             
-           
-            var dropDown = [tag_form.cat_1,tag_form.cat_2, tag_form.cat_3];
-            for (var i = 0; i <= dropDown.length -1; i++) {
-            	
-            	addOption_list(dropDown[i]);
+
+            var table = document.getElementById('paramToColumnTable');
+            for (i=1; i < table.rows.length; i++){
+                var colSelect = document.getElementById("fileColumnHeader" + (i-1 == 0 ? "" : i-1));
+                var paramSelect = document.getElementById("pixParam" + (i-1 == 0 ? "" : i-1));
+                console.log("colSelect: " + colSelect + " paramSelect: " + paramSelect);
+                if (colSelect) {
+                    addOption_list(colSelect, columns);
+                }
+                if (paramSelect) {
+                    addOption_list(paramSelect, travelParams);
+                }
             }
+           
+            // var dropDown = [tag_form.cat_1,tag_form.cat_2, tag_form.cat_3];
+            // for (var i = 0; i <= dropDown.length -1; i++) {
+            	
+            // 	addOption_list(file_header);
+            // }
 
 //             $(function(){
 
@@ -195,6 +216,104 @@ var formvalu = function(){
     });
 
 });
+
+function buildParamToColumnArray() {
+    var paramColumnArr = table2Json();
+
+    console.log("paramColumnArr: "+ JSON.stringify(paramColumnArr));
+};
+
+function tableToJson(table) {
+    var data = [];
+
+    // first row needs to be headers
+    var headers = [];
+    for (var i=0; i<table.rows[0].cells.length; i++) {
+        headers[i] = table.rows[0].cells[i].innerHTML.toLowerCase()
+    }
+
+    // go through cells
+    for (var i=1; i<table.rows.length; i++) {
+
+        var tableRow = table.rows[i];
+        var rowData = {};
+
+        for (var j=0; j<tableRow.cells.length; j++) {
+
+            rowData[ headers[j] ] = tableRow.cells[j].innerHTML;
+
+        }
+
+        data.push(rowData);
+    }       
+
+    return data;
+}
+
+function table2Json(){
+    var rows = [];
+    // console.log("paramToColumnTable: " + $("#paramToColumnTable"));
+    $("#paramToColumnTable tr").each(function(i, n){
+        var $row = $(n);
+        var count = 0;
+        if (count < 6) {
+            console.log("Row " + count + ": " + $row.find('td:eq(1)').text());
+        }
+        else {
+            console.log("Row " + count + ": " + $row.find('td:eq(1)').val());
+        }
+        rows.push({
+            param:   $row.find('td:eq(1)').text(),
+            custParam:    $row.find('td:eq(2)').text(),
+            colHeader:       $row.find('td:eq(3)').text(),
+            staticVal:         $row.find('td:eq(4)').text(),
+        });
+    count++});
+    return rows;
+}
+
+function addRow(tableID) {
+    var table = document.getElementById(tableID);
+    var rowCount = table.rows.length;
+    var row = table.insertRow(rowCount);
+    var colCount = table.rows[7].cells.length;
+
+    for(var i=0; i<colCount; i++) {
+        var newcell	= row.insertCell(i);
+            newcell.innerHTML = table.rows[7].cells[i].innerHTML;
+            switch(newcell.childNodes[0].type) {
+                case "text":
+                    newcell.childNodes[0].value = "";
+                break;
+                case "checkbox":
+                    newcell.childNodes[0].checked = false;
+                break;
+                case "select-one":
+                    newcell.childNodes[0].selectedIndex = 0;
+                break;
+        }
+    }
+}
+
+function deleteRow(tableID) {
+    try {
+    var table = document.getElementById(tableID);
+    var rowCount = table.rows.length;
+
+    for(var i=0; i<rowCount; i++) {
+        var row = table.rows[i];
+        var chkbox = row.cells[0].childNodes[0];
+        if(null != chkbox && true == chkbox.checked) {
+            table.deleteRow(i);
+            rowCount--;
+            i--;
+        }
+    }
+    }catch(e) {
+        alert(e);
+    }
+}
+
 
 function buildConfig() {
     return {
@@ -240,7 +359,7 @@ function httpGet(s2sUri, callback) {
         {
             callback(xmlHttp.responseText, queryString);
         }
- /*        else
+     /* else
         {
             callback("S2S Call Failed" + (xmlHttp.responseText ? " - " + xmlHttp.responseText : ""), queryString);
         } */
@@ -294,8 +413,7 @@ function constructPixels(data) {
     var pRes = data; 
     var pixels = [];
      
-    columns = pRes;
-    var uriPrefix = "https://www.emjcd.com/u?cid=1501378&type=400523"; //custom for Hotels.com
+    var uriPrefix = "https://www.emjcd.com/u?cid=1501378"; //custom for Hotels.com
 
     // console.log("line 190 " + pRes.length);
     console.log(columns);
@@ -306,13 +424,14 @@ function constructPixels(data) {
      * of the cjevent parameter and METHOD=S2S
      */
     for (i = 0; i < pRes.length; i++) {
+        console.log(pRes[i]['CHECKOUT']);
+        eTime = encodeURIComponent(new Date(pRes[i]['CHECKOUT']).toISOString());
         uri = "";
         uri += uriPrefix;
-        uri += "&oid=" + pRes[i]['OID'] + "&amount=" + pRes[i]['Sale Amount'] + "&check_in_date=" +  pRes[i]['CHECKIN'] 
+        uri += "&oid=" + pRes[i]['OID'] + "&type=" + pRes[i]['TYPE'] + "&amount=" + pRes[i]['Sale Amount'] + "&check_in_date=" +  pRes[i]['CHECKIN'] 
         + "&check_out_date=" +  pRes[i]['CHECKOUT'] + "&country=" +  pRes[i]['POSA'] + "&wr_earned=" +  pRes[i]['WR_EARNED'] + "&CURRENCY=" 
-        +  pRes[i]['CURRENCY_POSA'] + (pRes[i]['COUPON'] == "" || pRes[i]['COUPON'] == "UNDEFINED" ? "" : "&coupon=" +  pRes[i]['COUPON']) 
-        + "&property_id=" +  pRes[i]['SUPPLIER_PROPERTY_ID'] + "&payment_model=" +  pRes[i]['PAYMENT_MODEL'] + "&cjevent=" +  pRes[i]['EVENT ID'] 
-        + "&METHOD=S2S";
+        +  pRes[i]['CURRENCY_POSA'] + "&coupon=" +  pRes[i]['COUPON'].toLowerCase() + "&property_id=" +  pRes[i]['SUPPLIER_PROPERTY_ID'] 
+        + "&payment_model=" +  pRes[i]['PAYMENT_MODEL'] + "&eventTime=" + eTime +"&cjevent=" +  pRes[i]['EVENT ID'] + "&METHOD=S2S";
         pixels.push(uri);
     }
 
