@@ -14,16 +14,17 @@
 		<div class="grid-container">
 
 			<div class="grid-25">
-				<label><input type="checkbox" id="download"> Download</label>
+				<!-- <label><input type="checkbox" id="download"> Download</label> -->
 				<label><input type="checkbox" id="stream"> Stream</label>
 				<label><input type="checkbox" id="chunk"> Chunk</label>
-				<label><input type="checkbox" id="worker"> Worker thread</label>
-				<label><input type="checkbox" id="header"> Header row</label>
-				<label><input type="checkbox" id="dynamicTyping"> Dynamic typing</label>
+				<!-- <label><input type="checkbox" id="worker"> Worker thread</label> -->
+				<label><input type="checkbox" id="header" style="visibility: hidden;" checked></label> 
+				<!-- <label><input type="checkbox" id="dynamicTyping"> Dynamic typing</label>
 				<label><input type="checkbox" id="fastmode"> Fast mode</label>
 				<label><input type="checkbox" id="skipEmptyLines"> Skip empty lines</label>
 				<label><input type="checkbox" id="step-pause"> Pause on step</label>
-				<label><input type="checkbox" id="print-steps"> Log each step/chunk</label>
+				<label><input type="checkbox" id="print-steps"> Log each step/chunk</label> -->
+
 				
 				<label>Delimiter: <input type="text" size="5" placeholder="auto" id="delimiter"> <a href="javascript:" id="insert-tab">tab</a></label>
 
@@ -45,78 +46,159 @@
 				<label>Papa.RemoteChunkSize: <input type="number" min="0" placeholder="default" id="remoteChunkSize"></label>
 			</div>
 
-			<div id="column-to-key-simple">
+			<input type="file" id="files" multiple>
+
+			<div id="column-to-key-simple" class="center">
 				<table>
 					<textarea id="filePrev" rows="3" style="min-height: inherit; height: auto;" placeholder="Load a file to see preview"></textarea>
+				</table>		
+				<table id="paramToColumnTable" width="350px" border="1">
 					<tr>
-						<th>OID</th>
-						<th>CID</th>
-						<th>TYPE</th>
-						<th>AMOUNT</th>
+						<th></th>
+						<th>Pixel parameter name</th>
+						<th>Custom parameter name (if not in list)</th>
+						<th>Column header (from file)</th>
+						<th>Static value</th>
+					</tr>
+					<tr>
+						<td><INPUT type="checkbox" name="chk"/></td>
+						<td>CID</td>
+						<td></td>
+						<td>
+							<select name="file_header" id="fileColumnHeader" class="columnSelect" style="width: 172px">
+								<Option value="" >Choose a column</option>
+							</select>
+						</td>
+						<td><INPUT type="text" name="staticVal" /></td>
+					</tr>
+					<tr>
+					<tr>
+						<td><INPUT type="checkbox" name="chk1"/></td>
+						<td>TYPE</td>
+						<td></td>
+						<td>
+							<select name="file_header1" id="fileColumnHeader1" class="columnSelect" style="width: 172px">
+								<Option value="" >Choose a column</option>
+							</select>
+						</td>
+						<td><INPUT type="text" name="staticVal1" /></td>
+					</tr><tr>
+						<td><INPUT type="checkbox" name="chk2"/></td>
+						<td>OID</td>
+						<td></td>
+						<td>
+							<select name="file_header2" id="fileColumnHeader2" class="columnSelect" style="width: 172px">
+								<Option value="" >Choose a column</option>
+							</select>
+						</td>
+						<td></td>
+					</tr><tr>
+						<td><INPUT type="checkbox" name="chk3"/></td>
+						<td>AMOUNT</td>
+						<td></td>
+						<td>
+							<select name="file_header3" id="fileColumnHeader3" class="columnSelect" style="width: 172px">
+								<Option value="" >Choose a column</option>
+							</select>
+						</td>
+						<td><INPUT type="text" name="staticVal3" /></td>
+					</tr><tr>
+						<td><INPUT type="checkbox" name="chk4"/></td>
+						<td>CURRENCY</td>
+						<td></td>
+						<td>
+							<select name="file_header4" id="fileColumnHeader4" class="columnSelect" style="width: 172px">
+								<Option value="" >Choose a column</option>
+							</select>
+						</td>
+						<td><INPUT type="text" name="staticVal4" /></td>
+					</tr>
+					<tr>
+						<td><INPUT type="checkbox" name="chk5"/></td>
+						<td>
+							<select name="param" id="pixParam5" class="paramSelect" style="width: 172px">
+								<Option value="" >Choose a predefined parameter</option>
+							</select>
+						</td>
+						<td> <INPUT type="text" name="staticParamName" /> </td>
+						<td>
+							<select name="file_header5" id="fileColumnHeader5" class="columnSelect" style="width: 172px">
+								<Option value="" >Choose a column</option>
+							</select>
+						</td>
+						<td> <INPUT type="text" name="staticVal5" /> </td>
 					</tr>
 				</table>
-				<form id="tag-values-simple">
-					<select id="oid1">
-						<option value="volvo">Volvo</option>
-						<option value="saab">Saab</option>
-						<option value="mercedes">Mercedes</option>
-						<option value="audi">Audi</option>
+
+				<INPUT type="button" value="Add Row" onclick="addRow('paramToColumnTable')" />
+				<INPUT type="button" value="Delete Selected Row(s)" onclick="deleteRow('paramToColumnTable')" />
+
+				<!-- <form name="tag_form" id="tag-values-simple">
+
+					<label for="cat_1" style="display: inline;">OID</label>
+					<select name="cat_1" id="cat_1" placeholder= "OID" style="width: 172px">
+						<Option value="" >Column Edit</option>
 					</select>
-					<select id="cid1">
-						<option value="volvo">Volvo</option>
-						<option value="saab">Saab</option>
-						<option value="mercedes">Mercedes</option>
-						<option value="audi">Audi</option>
+
+					<label for="cat_2" style="display: inline;">CID</label>
+					<select id="cat_2" style="width: 172px">
+						<Option value="" >Column Edit</option>
 					</select>
-					<select id="type1">
-						<option value="volvo">Volvo</option>
-						<option value="saab">Saab</option>
-						<option value="mercedes">Mercedes</option>
-						<option value="audi">Audi</option>
+
+					<label for="cat_1" style="display: inline;">TYPE</label>
+					<select id="cat_3" style="width: 172px">
+						<Option value="" >Column Edit</option>
 					</select>
-					<select id="amount1">
-						<option value="volvo">Volvo</option>
-						<option value="saab">Saab</option>
-						<option value="mercedes">Mercedes</option>
-						<option value="audi">Audi</option>
-					</select>
+
+					
+
 					<br>
-					<input type="text" id="oid2">
-					<input type="text" id="cid2">
-					<input type="text" id="type2">
-					<input type="text" id="amount2">
-				<button type="submit" value="Submit" onclick=formValues(oid1.value,oid2.value)>Submit</button>
-				</form>
+					<label for="cat_1" style="display: inline;">OID</label>
+					<input type="text" id="box1">
+
+					<label for="cat_1" style="display: inline;">CID</label>
+					<input type="text" id="box2">
+
+					<label for="cat_1" style="display: inline;">TYPE</label>
+					<input type="text" id="box3">
+
+					
+				<button onclick="formValues()" type="submit" value="Submit" id="pre_sub">Submit</button>
+				<button onClick="addOption";></button>
+				</form> -->
 			</div>
-			<script>
-				function formValues(x,y){
-					tagVals = [x,y];
-					alert(tagVals);
-				};
-			</script>
+
+							
+			<div class="text-center">
+				<button id="submit-columns" onclick="buildParamToColumnArray()">Submit column assignments</button>
+			</div>
+				
+			
 
 			<div class="grid-75 text-center">
 
-				<textarea id="input" placeholder="Input">Column 1,Column 2,Column 3,Column 4
-1-1,1-2,1-3,1-4
-2-1,2-2,2-3,2-4
-3-1,3-2,3-3,3-4
-40,41,42,43
-"Quoted field",No quotes,"Foo","bar",extra
-"Field quoted with
-line break"</textarea>
 		
-				<br>
+		
+				<!-- <br>
 				<b>or</b>
-				<br>
+				<br> -->
 
-				<input type="file" id="files" multiple>
+				<!-- <input type="file" id="files" multiple> -->
 			
 				<br><br>
-
+<!-- 			<label><input type="checkbox" id="preview-pixels">Check this to preview the output in the browser</label>
+				<label><input type="checkbox" id="fire-ze-pixels" >Check this to have the pixels fired upon completion of parsing</label>
+				<script>$('#preview-pixels').change = function() { $('#fire-ze-pixels').enabled = !this.checked; };</script> -->
+				<p><b>Choose whether to preview or fire the pixels.</b></p>
+				<p><b>ALWAYS PREVIEW FIRST!!!</b></p>
+				<label><input type="radio" id="preview-pixels" name="firePixels" value="preview" checked>Select to preview the output below</label>
+				<label><input type="radio" id="fire-ze-pixels" name="firePixels" value="fire">Select to have the pixels fired upon completion of parsing</label>
+				<br><br>
+				<label><input type="checkbox" id="output-csv">Output resulting pixels to CSV file</label>
+				<br><br>
 				<button id="submit-parse">Parse</button>
-				&nbsp;
-				<button id="submit-unparse">Unparse</button>
+<!-- 				&nbsp;
+				<button id="submit-unparse">Unparse</button> -->
 
 				<br><br>
 
@@ -124,7 +206,7 @@ line break"</textarea>
 
 				<br><br>
 			</div>
-
+			<div class="pixel-preview"></div>
 			<div class="pixel-list"></div>
 		</div>
 	</body>
